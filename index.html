@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>雷震子遇難記｜網頁遊戲</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container" class="game-container">
+    <h1 id="game-title" class="game-title"></h1>
+    <div id="chapter-title" class="chapter-title"></div>
+    
+    <!-- 進度條 -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+      <div id="progress-text" class="progress-text">第一回 / 共三回</div>
+    </div>
+    
+    <!-- 章節開場示意圖 -->
+    <div id="chapter-intro-section" class="content-card" style="display:none;">
+      <div id="chapter-intro-image" class="image-container"></div>
+      <div id="chapter-intro-text" class="story-text"></div>
+      <button id="start-chapter" class="btn">開始章節</button>
+    </div>
+    
+    <div id="main-content" class="content-card" style="display:none;">
+      <div id="story" class="story-text"></div>
+      <div id="chapter-image" class="image-container"></div>
+    </div>
+    
+    <div id="puzzle-section" class="content-card" style="display:none;">
+      <h2 class="chapter-title">謎題</h2>
+      <div id="puzzle-question" class="story-text"></div>
+      <div id="puzzle-image" class="image-container" style="display:none;"></div>
+      <input type="text" id="puzzle-answer" class="puzzle-input" placeholder="請輸入答案">
+      <button id="submit-answer" class="btn">確定</button>
+      <button id="show-hint" class="btn">提示</button>
+      <div id="hint" class="story-text"></div>
+      <div id="puzzle-feedback" class="story-text"></div>
+    </div>
+    
+    <div id="ending-section" class="content-card" style="display:none;">
+      <h2 id="ending-title" class="chapter-title"></h2>
+      <div id="ending-story" class="story-text"></div>
+    </div>
+  </div>
+  <script src="main.js"></script>
+</body>
+</html>
