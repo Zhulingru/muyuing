@@ -398,3 +398,97 @@ body {
     background: linear-gradient(45deg, var(--text-gold), var(--border-gold));
   }
 }
+
+/* 相機功能樣式 */
+#camera-preview {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+#camera-video {
+  border: 2px solid var(--border-gold);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px var(--shadow-dark);
+  margin-bottom: 1rem;
+}
+
+#photo-result {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+#photo-canvas {
+  border: 2px solid var(--border-gold);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px var(--shadow-dark);
+  margin-bottom: 1rem;
+}
+
+#analysis-status {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 1rem 0;
+  padding: 0.8rem;
+  border-radius: 6px;
+  background: rgba(245, 245, 220, 0.1);
+  border: 1px solid var(--border-gold);
+}
+
+/* 相機按鈕特殊樣式 */
+#take-photo {
+  background: linear-gradient(45deg, #4CAF50, #45a049);
+  font-size: 1.1rem;
+  padding: 15px 25px;
+}
+
+#take-photo:hover {
+  background: linear-gradient(45deg, #45a049, #4CAF50);
+}
+
+#capture-photo {
+  background: linear-gradient(45deg, #2196F3, #1976D2);
+}
+
+#capture-photo:hover {
+  background: linear-gradient(45deg, #1976D2, #2196F3);
+}
+
+#retake-photo {
+  background: linear-gradient(45deg, #FF9800, #F57C00);
+}
+
+#retake-photo:hover {
+  background: linear-gradient(45deg, #F57C00, #FF9800);
+}
+
+#close-camera {
+  background: linear-gradient(45deg, #f44336, #d32f2f);
+}
+
+#close-camera:hover {
+  background: linear-gradient(45deg, #d32f2f, #f44336);
+}
+
+/* 手機相機樣式優化 */
+@media (max-width: 768px) {
+  #camera-video, #photo-canvas {
+    width: 100%;
+    max-width: 350px;
+    height: auto;
+  }
+  
+  #take-photo {
+    width: 100%;
+    margin: 10px 0;
+  }
+  
+  #capture-photo, #close-camera {
+    width: calc(50% - 5px);
+    margin: 5px 2.5px;
+  }
+  
+  #retake-photo {
+    width: 100%;
+    margin: 10px 0;
+  }
+}

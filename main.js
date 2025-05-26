@@ -1,14 +1,28 @@
 let gameData;
 let currentChapter = 0;
 let currentHint = 0;
+let mobileNetModel = null;
+let cameraStream = null;
 
-// 讀取 JSON 資料
-fetch('data/gameData.json')
-  .then(response => response.json())
-  .then(data => {
-    gameData = data;
-    renderChapter();
-  });
+// 讀取 JSON 資料和載入 AI 模型
+Promise.all([
+  fetch('data/gameData.json').then(response => response.json()),
+  mobilenet.load()
+]).then(([data, model]) => {
+  gameData = data;
+  mobileNetModel = model;
+  console.log('遊戲資料和 AI 模型載入完成');
+  renderChapter();
+}).catch(error => {
+  console.error('載入失敗:', error);
+  // 如果 AI 模型載入失敗，仍然可以玩遊戲（只是相機功能無法使用）
+  fetch('data/gameData.json')
+    .then(response => response.json())
+    .then(data => {
+      gameData = data;
+      renderChapter();
+    });
+});
 
 // 開始章節按鈕事件
 document.getElementById('start-chapter').onclick = function() {
@@ -80,10 +94,21 @@ function startChapter() {
     } else {
       document.getElementById('puzzle-image').style.display = 'none';
     }
-    document.getElementById('puzzle-answer').value = '';
-    document.getElementById('hint').textContent = '';
+    
+    // 根據謎題類型顯示不同的介面
+    if (chapter.puzzle.type === 'camera') {
+      document.getElementById('text-puzzle').style.display = 'none';
+      document.getElementById('camera-puzzle').style.display = '';
+      resetCameraInterface();
+    } else {
+      document.getElementById('text-puzzle').style.display = '';
+      document.getElementById('camera-puzzle').style.display = 'none';
+      document.getElementById('puzzle-answer').value = '';
+      document.getElementById('hint').textContent = '';
+      currentHint = 0;
+    }
+    
     document.getElementById('puzzle-feedback').textContent = '';
-    currentHint = 0;
   } else {
     document.getElementById('puzzle-section').style.display = 'none';
   }
@@ -204,5 +229,139 @@ function updateProgress() {
   const totalChapterText = chapterNumbers[totalChapters - 1] || totalChapters;
   
   document.getElementById('progress-text').textContent = `第${currentChapterText}回 / 共${totalChapterText}回`;
+}
+
+// ===== 相機功能 =====
+
+// 重置相機介面
+function resetCameraInterface() {
+  document.getElementById('camera-preview').style.display = 'none';
+  document.getElementById('photo-result').style.display = 'none';
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+  }
+}
+
+// 拍照按鈕事件
+document.getElementById('take-photo').onclick = async function() {
+  if (!mobileNetModel) {
+    document.getElementById('puzzle-feedback').textContent = 'AI 模型尚未載入完成，請稍後再試';
+    return;
+  }
+  
+  try {
+    // 請求相機權限
+    cameraStream = await navigator.mediaDevices.getUserMedia({ 
+      video: { 
+        facingMode: 'environment' // 使用後置相機
+      } 
+    });
+    
+    const video = document.getElementById('camera-video');
+    video.srcObject = cameraStream;
+    
+    document.getElementById('camera-preview').style.display = '';
+    
+  } catch (error) {
+    console.error('無法存取相機:', error);
+    document.getElementById('puzzle-feedback').textContent = '無法存取相機，請確認已允許相機權限';
+  }
+};
+
+// 拍攝按鈕事件
+document.getElementById('capture-photo').onclick = function() {
+  const video = document.getElementById('camera-video');
+  const canvas = document.getElementById('photo-canvas');
+  const ctx = canvas.getContext('2d');
+  
+  // 設定 canvas 尺寸
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  
+  // 將影像繪製到 canvas
+  ctx.drawImage(video, 0, 0);
+  
+  // 隱藏相機預覽，顯示拍攝結果
+  document.getElementById('camera-preview').style.display = 'none';
+  document.getElementById('photo-result').style.display = '';
+  
+  // 停止相機
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+  }
+  
+  // 開始分析照片
+  analyzePhoto(canvas);
+};
+
+// 取消拍照
+document.getElementById('close-camera').onclick = function() {
+  resetCameraInterface();
+};
+
+// 重新拍攝
+document.getElementById('retake-photo').onclick = function() {
+  resetCameraInterface();
+  document.getElementById('take-photo').click();
+};
+
+// 分析照片
+async function analyzePhoto(canvas) {
+  const statusDiv = document.getElementById('analysis-status');
+  statusDiv.textContent = '正在分析照片...';
+  
+  try {
+    // 使用 MobileNet 分析照片
+    const predictions = await mobileNetModel.classify(canvas);
+    console.log('辨識結果:', predictions);
+    
+    // 檢查是否找到目標物品
+    const chapter = gameData.chapters[currentChapter];
+    const targetObjects = chapter.puzzle.answer; // ['cup']
+    
+    let found = false;
+    for (const prediction of predictions) {
+      for (const target of targetObjects) {
+        if (prediction.className.toLowerCase().includes(target.toLowerCase())) {
+          found = true;
+          break;
+        }
+      }
+      if (found) break;
+    }
+    
+    if (found) {
+      statusDiv.textContent = '✅ 辨識成功！找到了杯子！';
+      document.getElementById('puzzle-feedback').textContent = gameData.settings.correctMessage;
+      
+      // 顯示章節結尾
+      const chapter = gameData.chapters[currentChapter];
+      if (chapter.conclusion) {
+        setTimeout(() => {
+          showChapterConclusion(chapter.conclusion);
+        }, 2000);
+      } else {
+        setTimeout(() => {
+          nextChapter();
+        }, 2000);
+      }
+    } else {
+      statusDiv.textContent = '❌ 沒有找到杯子，請重新拍攝';
+      document.getElementById('puzzle-feedback').textContent = '請重新拍攝杯子';
+      
+      // 顯示辨識到的物品（除錯用）
+      if (predictions.length > 0) {
+        const topPrediction = predictions[0];
+        console.log(`辨識到: ${topPrediction.className} (信心度: ${(topPrediction.probability * 100).toFixed(1)}%)`);
+      }
+    }
+    
+  } catch (error) {
+    console.error('分析照片時發生錯誤:', error);
+    statusDiv.textContent = '❌ 分析失敗，請重新拍攝';
+    document.getElementById('puzzle-feedback').textContent = '分析失敗，請重新拍攝';
+  }
 }
 

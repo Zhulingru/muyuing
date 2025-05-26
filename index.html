@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>雷震子遇難記｜網頁遊戲</title>
   <link rel="stylesheet" href="style.css">
+  <!-- TensorFlow.js 和 MobileNet -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js"></script>
 </head>
 <body>
   <div id="game-container" class="game-container">
@@ -35,10 +38,30 @@
       <h2 class="chapter-title">謎題</h2>
       <div id="puzzle-question" class="story-text"></div>
       <div id="puzzle-image" class="image-container" style="display:none;"></div>
-      <input type="text" id="puzzle-answer" class="puzzle-input" placeholder="請輸入答案">
-      <button id="submit-answer" class="btn">確定</button>
-      <button id="show-hint" class="btn">提示</button>
-      <div id="hint" class="story-text"></div>
+      
+      <!-- 文字輸入謎題 -->
+      <div id="text-puzzle" style="display:none;">
+        <input type="text" id="puzzle-answer" class="puzzle-input" placeholder="請輸入答案">
+        <button id="submit-answer" class="btn">確定</button>
+        <button id="show-hint" class="btn">提示</button>
+        <div id="hint" class="story-text"></div>
+      </div>
+      
+      <!-- 相機謎題 -->
+      <div id="camera-puzzle" style="display:none;">
+        <button id="take-photo" class="btn">📸 拍照</button>
+        <div id="camera-preview" style="display:none;">
+          <video id="camera-video" autoplay playsinline style="width:100%; max-width:400px; border-radius:8px;"></video>
+          <button id="capture-photo" class="btn">拍攝</button>
+          <button id="close-camera" class="btn">取消</button>
+        </div>
+        <div id="photo-result" style="display:none;">
+          <canvas id="photo-canvas" style="width:100%; max-width:400px; border-radius:8px;"></canvas>
+          <div id="analysis-status" class="story-text">正在分析照片...</div>
+          <button id="retake-photo" class="btn">重新拍攝</button>
+        </div>
+      </div>
+      
       <div id="puzzle-feedback" class="story-text"></div>
     </div>
     
