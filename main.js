@@ -377,7 +377,7 @@ async function analyzePhoto(canvas) {
     }
     
     if (found) {
-      statusDiv.textContent = `✅ 辨識成功！找到了：${foundItem}`;
+      statusDiv.textContent = '✅ 辨識成功！';
       document.getElementById('puzzle-feedback').textContent = '你成功找到了杯子！';
       
       // 顯示章節結尾
@@ -392,16 +392,11 @@ async function analyzePhoto(canvas) {
         }, 2000);
       }
     } else {
-      // 顯示詳細的辨識結果
-      const topResults = predictions.slice(0, 3).map(p => 
-        `${p.className} (${(p.probability * 100).toFixed(1)}%)`
-      ).join(', ');
-      
-      statusDiv.textContent = `❌ 沒有找到杯子類物品`;
+      statusDiv.textContent = '❌ 未找到杯子';
       document.getElementById('puzzle-feedback').innerHTML = `
         <div>請重新拍攝杯子</div>
-        <div style="font-size: 0.8em; color: #666; margin-top: 0.5rem;">
-          辨識到：${topResults}
+        <div style="font-size: 0.9em; color: #d4af37; margin-top: 0.8rem;">
+          💡 拍攝建議：確保杯子清晰可見，光線充足
         </div>
       `;
     }
