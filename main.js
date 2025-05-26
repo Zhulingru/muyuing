@@ -319,13 +319,31 @@ async function analyzePhoto(canvas) {
     
     // 檢查是否找到目標物品
     const chapter = gameData.chapters[currentChapter];
-    const targetObjects = chapter.puzzle.answer; // ['cup']
+    
+    // 擴展杯子相關的關鍵字（更全面）
+    const cupKeywords = [
+      'cup', 'mug', 'teacup', 'coffee', 'glass', 'tumbler', 'goblet',
+      'espresso', 'latte', 'cappuccino', 'beer', 'wine', 'water',
+      'drinking', 'beverage', 'container', 'vessel'
+    ];
     
     let found = false;
+    let foundItem = '';
+    let bestMatch = null;
+    
+    // 顯示前3個辨識結果（除錯用）
+    console.log('=== 辨識結果 ===');
+    predictions.slice(0, 3).forEach((pred, index) => {
+      console.log(`${index + 1}. ${pred.className} (${(pred.probability * 100).toFixed(1)}%)`);
+    });
+    
     for (const prediction of predictions) {
-      for (const target of targetObjects) {
-        if (prediction.className.toLowerCase().includes(target.toLowerCase())) {
+      const className = prediction.className.toLowerCase();
+      for (const keyword of cupKeywords) {
+        if (className.includes(keyword)) {
           found = true;
+          foundItem = prediction.className;
+          bestMatch = prediction;
           break;
         }
       }
@@ -333,7 +351,7 @@ async function analyzePhoto(canvas) {
     }
     
     if (found) {
-      statusDiv.textContent = '✅ 辨識成功！找到了杯子！';
+      statusDiv.textContent = `✅ 辨識成功！找到了：${foundItem}`;
       document.getElementById('puzzle-feedback').textContent = gameData.settings.correctMessage;
       
       // 顯示章節結尾
@@ -348,14 +366,18 @@ async function analyzePhoto(canvas) {
         }, 2000);
       }
     } else {
-      statusDiv.textContent = '❌ 沒有找到杯子，請重新拍攝';
-      document.getElementById('puzzle-feedback').textContent = '請重新拍攝杯子';
+      // 顯示詳細的辨識結果
+      const topResults = predictions.slice(0, 3).map(p => 
+        `${p.className} (${(p.probability * 100).toFixed(1)}%)`
+      ).join(', ');
       
-      // 顯示辨識到的物品（除錯用）
-      if (predictions.length > 0) {
-        const topPrediction = predictions[0];
-        console.log(`辨識到: ${topPrediction.className} (信心度: ${(topPrediction.probability * 100).toFixed(1)}%)`);
-      }
+      statusDiv.textContent = `❌ 沒有找到杯子類物品`;
+      document.getElementById('puzzle-feedback').innerHTML = `
+        <div>請重新拍攝杯子</div>
+        <div style="font-size: 0.8em; color: #666; margin-top: 0.5rem;">
+          辨識到：${topResults}
+        </div>
+      `;
     }
     
   } catch (error) {
