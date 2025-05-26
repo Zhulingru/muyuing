@@ -4,25 +4,49 @@ let currentHint = 0;
 let mobileNetModel = null;
 let cameraStream = null;
 
-// 讀取 JSON 資料和載入 AI 模型
-Promise.all([
-  fetch('data/gameData.json').then(response => response.json()),
-  mobilenet.load()
-]).then(([data, model]) => {
-  gameData = data;
-  mobileNetModel = model;
-  console.log('遊戲資料和 AI 模型載入完成');
-  renderChapter();
-}).catch(error => {
-  console.error('載入失敗:', error);
-  // 如果 AI 模型載入失敗，仍然可以玩遊戲（只是相機功能無法使用）
-  fetch('data/gameData.json')
-    .then(response => response.json())
-    .then(data => {
-      gameData = data;
-      renderChapter();
-    });
-});
+// 優先載入遊戲資料，讓玩家可以立即開始
+fetch('data/gameData.json')
+  .then(response => response.json())
+  .then(data => {
+    gameData = data;
+    console.log('遊戲資料載入完成');
+    renderChapter();
+    
+    // 在背景載入 AI 模型
+    loadAIModel();
+  })
+  .catch(error => {
+    console.error('遊戲資料載入失敗:', error);
+  });
+
+// 背景載入 AI 模型
+async function loadAIModel() {
+  try {
+    console.log('開始載入 AI 模型...');
+    mobileNetModel = await mobilenet.load();
+    console.log('✅ AI 模型載入完成！相機功能已可使用');
+    
+    // 更新相機按鈕狀態
+    updateCameraButtonStatus();
+  } catch (error) {
+    console.error('❌ AI 模型載入失敗:', error);
+    mobileNetModel = null;
+  }
+}
+
+// 更新相機按鈕狀態
+function updateCameraButtonStatus() {
+  const takePhotoBtn = document.getElementById('take-photo');
+  if (takePhotoBtn) {
+    if (mobileNetModel) {
+      takePhotoBtn.textContent = '📸 開始拍照';
+      takePhotoBtn.disabled = false;
+    } else {
+      takePhotoBtn.textContent = '⏳ AI 模型載入中...';
+      takePhotoBtn.disabled = true;
+    }
+  }
+}
 
 // 開始章節按鈕事件
 document.getElementById('start-chapter').onclick = function() {
@@ -100,6 +124,8 @@ function startChapter() {
       document.getElementById('text-puzzle').style.display = 'none';
       document.getElementById('camera-puzzle').style.display = '';
       resetCameraInterface();
+      // 更新相機按鈕狀態
+      updateCameraButtonStatus();
     } else {
       document.getElementById('text-puzzle').style.display = '';
       document.getElementById('camera-puzzle').style.display = 'none';
