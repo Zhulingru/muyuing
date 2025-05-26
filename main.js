@@ -378,7 +378,7 @@ async function analyzePhoto(canvas) {
     
     if (found) {
       statusDiv.textContent = `✅ 辨識成功！找到了：${foundItem}`;
-      document.getElementById('puzzle-feedback').textContent = gameData.settings.correctMessage;
+      document.getElementById('puzzle-feedback').textContent = '你成功找到了杯子！';
       
       // 顯示章節結尾
       const chapter = gameData.chapters[currentChapter];
