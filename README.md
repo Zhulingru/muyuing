@@ -106,7 +106,7 @@ Interior of Ximending Red House in 1943, time-travel scene. Dimly lit corridor w
 **檔名：** `chapter1_puzzle1.png`
 **Prompt：**
 ```
-Vintage Japanese calendar or document showing "昭和十八年" (Showa 18), 1943 Taiwan under Japanese rule. Old paper texture with traditional Japanese typography, historical documents, vintage stamps or seals. Warm sepia tones, aged paper effect. Educational and historical mood, clear readable text. Museum-quality historical artifact style, detailed typography, authentic period design.
+Vintage Japanese calendar or document clearly showing "昭和十八年" (Showa 18) and "西元1943年" side by side, 1943 Taiwan under Japanese rule. Historical conversion chart or official document displaying both Japanese era year and Western calendar year. Old paper texture with traditional Japanese and Chinese typography, vintage stamps or seals. Warm sepia tones, aged paper effect. Clear readable text showing the year conversion, educational reference material style. Museum-quality historical artifact with visible year correlation.
 ```
 
 #### 4. 複雜謎題圖（拍照紀念）
@@ -116,10 +116,68 @@ Vintage Japanese calendar or document showing "昭和十八年" (Showa 18), 1943
 Vintage 1940s camera or photography scene, young man wanting to take a commemorative photo. Old-fashioned camera equipment, perhaps a box camera or early film camera. Warm nostalgic lighting, sepia tones. Romantic and sentimental mood, capturing precious memories. Historical photography equipment, detailed vintage design, soft focus background. Artistic composition emphasizing the importance of preserving memories.
 ```
 
+### 第二章圖片
+
+#### 1. 章節示意圖
+**檔名：** `chapter2_intro.png`
+**Prompt：**
+```
+1943 Taipei city street scene, traditional wooden houses mixed with early modernization signs. A middle-aged surveyor in blue traditional Chinese robe holding an old map, standing on stone-paved streets. Background shows traditional architecture transitioning to modern infrastructure. Warm sepia tones, historical atmosphere. Cinematic composition showing urban transformation, detailed period clothing and architecture. Nostalgic mood capturing the moment between tradition and modernity.
+```
+
+#### 2. 章節場景圖
+**檔名：** `chapter2_scene.png`
+**Prompt：**
+```
+Close-up scene of a surveyor unrolling an ancient Taipei city map, 1943 setting. Detailed vintage map showing streets, rivers, and important buildings including planned gas factory location and Mazu temple. Hands pointing at specific locations on the map. Warm amber lighting, aged paper texture, traditional Chinese calligraphy on the map. Historical documentary style, detailed cartography, sepia-toned atmosphere. Educational and contemplative mood.
+```
+
+#### 3. 簡單謎題圖（台北城建造）
+**檔名：** `chapter2_puzzle1.png`
+**Prompt：**
+```
+Historical document or stone tablet showing "光緒八年" (8th year of Guangxu era), related to Taipei city construction in 1882. Traditional Chinese calligraphy, aged stone or paper texture. Official government document style from Qing Dynasty period. Warm sepia tones, museum artifact quality. Clear readable Chinese characters, historical authenticity. Educational reference material style, detailed traditional typography.
+```
+
+#### 4. 複雜謎題圖（古地圖拍照）
+**檔名：** `chapter2_puzzle2.png`
+**Prompt：**
+```
+Vintage surveying scene, 1940s camera positioned to photograph an ancient Taipei city map. Historical cartography equipment, measuring tools, and old maps spread on a wooden table. Warm nostalgic lighting, sepia tones. Documentary photography style, capturing the importance of preserving historical records. Detailed vintage surveying instruments, aged paper textures. Scholarly and historical preservation mood.
+```
+
 ## 專案連結
 
 - GitHub倉庫：https://github.com/Zhulingru/muyuing.git
 - 遊戲主題：瓦斯工廠歷史 × 西門町記憶 × 時空穿越愛情
+
+### 2025-05-27 第二章開發與圖片資源
+
+#### 第二章內容實作
+- 完成第二章「城市轉變與現代化的代價」完整內容設計
+- 新增測量師角色與台北城古地圖主題
+- 設計數字謎題：台北城建造年份（1882年，光緒八年）
+- 設計相機謎題：拍攝古地圖記錄
+- 新增道具：紅繩手鍊 + 紙條②「紅線千里牽」
+
+#### 系統更新與優化
+- 更新進度條系統：顯示「第一章/共六章」，進度條16.67%
+- 確認背景圖片就位並正常顯示
+- 成功推送第二章內容到GitHub
+
+#### 圖片資源規劃完成
+- 完成第二章4張圖片的AI生成prompt設計
+- 章節示意圖：1943年台北街景與測量師場景
+- 章節場景圖：古地圖展開與指點場景
+- 簡單謎題圖：光緒八年歷史文件展示
+- 複雜謎題圖：古地圖拍照記錄場景
+- 所有prompt已整合到README圖片生成區段
+
+#### 遊戲邏輯優化與問題修正
+- 修正進度條顯示錯誤：移除舊的第三章資料，現在正確顯示2章節
+- 實作雙謎題系統：簡單謎題→後半劇情→複雜謎題→結論道具
+- 優化昭和年號謎題圖片prompt：加入「西元1943年」對照，讓玩家能直接從圖片找到答案
+- 完善第一、二章的劇情結構：前半劇情→簡單謎題→後半劇情→複雜謎題→道具獲得
 
 ## 備註
 

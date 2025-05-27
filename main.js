@@ -1,6 +1,7 @@
 let gameData;
 let currentChapter = 0;
 let currentHint = 0;
+let currentPuzzlePhase = 1; // 1=簡單謎題, 2=複雜謎題
 let mobileNetModel = null;
 let cameraStream = null;
 
@@ -91,6 +92,7 @@ function showChapterIntro(chapter) {
 
 function startChapter() {
   const chapter = gameData.chapters[currentChapter];
+  currentPuzzlePhase = 1; // 重置為第一個謎題
   
   // 隱藏開場示意圖區域
   document.getElementById('chapter-intro-section').style.display = 'none';
@@ -98,7 +100,7 @@ function startChapter() {
   // 顯示主要內容
   document.getElementById('main-content').style.display = '';
   
-  // 顯示故事內容
+  // 顯示故事內容（前半段）
   document.getElementById('story').innerHTML = chapter.story.map(p => `<p>${p}</p>`).join('');
   
   // 章節圖片
@@ -108,19 +110,35 @@ function startChapter() {
     document.getElementById('chapter-image').innerHTML = '';
   }
 
-  // 謎題區
-  if (chapter.puzzle) {
+  // 顯示第一個謎題（簡單謎題）
+  showCurrentPuzzle();
+
+  // 結局區
+  document.getElementById('ending-section').style.display = 'none';
+}
+
+function showCurrentPuzzle() {
+  const chapter = gameData.chapters[currentChapter];
+  let puzzle;
+  
+  if (currentPuzzlePhase === 1) {
+    puzzle = chapter.puzzle; // 簡單謎題
+  } else {
+    puzzle = chapter.puzzle2; // 複雜謎題
+  }
+  
+  if (puzzle) {
     document.getElementById('puzzle-section').style.display = '';
-    document.getElementById('puzzle-question').textContent = chapter.puzzle.question;
-    if (chapter.puzzle.image) {
-      document.getElementById('puzzle-image').innerHTML = `<img src="images/${chapter.puzzle.image}" alt="謎題圖片" class="puzzle-image">`;
+    document.getElementById('puzzle-question').textContent = puzzle.question;
+    if (puzzle.image) {
+      document.getElementById('puzzle-image').innerHTML = `<img src="images/${puzzle.image}" alt="謎題圖片" class="puzzle-image">`;
       document.getElementById('puzzle-image').style.display = '';
     } else {
       document.getElementById('puzzle-image').style.display = 'none';
     }
     
     // 根據謎題類型顯示不同的介面
-    if (chapter.puzzle.type === 'camera') {
+    if (puzzle.type === 'camera') {
       document.getElementById('text-puzzle').style.display = 'none';
       document.getElementById('camera-puzzle').style.display = '';
       resetCameraInterface();
@@ -135,7 +153,7 @@ function startChapter() {
       
       // 根據謎題類型設置輸入框類型
       const answerInput = document.getElementById('puzzle-answer');
-      if (chapter.puzzle.type === 'number') {
+      if (puzzle.type === 'number') {
         answerInput.type = 'number';
         answerInput.placeholder = '請輸入數字';
       } else {
@@ -148,27 +166,34 @@ function startChapter() {
   } else {
     document.getElementById('puzzle-section').style.display = 'none';
   }
-
-  // 結局區
-  document.getElementById('ending-section').style.display = 'none';
 }
 
 // 提交答案
 document.getElementById('submit-answer').onclick = function() {
   const chapter = gameData.chapters[currentChapter];
+  let puzzle;
+  
+  if (currentPuzzlePhase === 1) {
+    puzzle = chapter.puzzle;
+  } else {
+    puzzle = chapter.puzzle2;
+  }
+  
   const userAnswer = document.getElementById('puzzle-answer').value.trim();
-  const correctAnswers = chapter.puzzle.answer.map(ans => ans.trim());
+  const correctAnswers = puzzle.answer.map(ans => ans.trim());
+  
   if (correctAnswers.includes(userAnswer)) {
     document.getElementById('puzzle-feedback').textContent = gameData.settings.correctMessage;
     
-    // 顯示章節結尾
-    if (chapter.conclusion) {
+    if (currentPuzzlePhase === 1) {
+      // 第一個謎題完成，進入第二階段
       setTimeout(() => {
-        showChapterConclusion(chapter.conclusion);
+        proceedToSecondPuzzle();
       }, 1000);
     } else {
+      // 第二個謎題完成，顯示結論
       setTimeout(() => {
-        nextChapter();
+        showChapterConclusion(chapter.conclusion);
       }, 1000);
     }
   } else {
@@ -176,30 +201,54 @@ document.getElementById('submit-answer').onclick = function() {
   }
 };
 
+function proceedToSecondPuzzle() {
+  const chapter = gameData.chapters[currentChapter];
+  currentPuzzlePhase = 2;
+  
+  // 隱藏第一個謎題
+  document.getElementById('puzzle-section').style.display = 'none';
+  
+  // 如果有後半段劇情，顯示它
+  if (chapter.midStory) {
+    const midStoryHtml = chapter.midStory.map(p => `<p>${p}</p>`).join('');
+    const midStoryDiv = document.createElement('div');
+    midStoryDiv.className = 'mid-story';
+    midStoryDiv.innerHTML = midStoryHtml;
+    document.getElementById('story').appendChild(midStoryDiv);
+    
+    // 滾動到新內容
+    setTimeout(() => {
+      midStoryDiv.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }, 500);
+  }
+  
+  // 顯示第二個謎題
+  setTimeout(() => {
+    showCurrentPuzzle();
+  }, 1500);
+}
+
 // 顯示提示
 document.getElementById('show-hint').onclick = function() {
   const chapter = gameData.chapters[currentChapter];
-  if (chapter.puzzle && chapter.puzzle.hints && currentHint < chapter.puzzle.hints.length) {
-    document.getElementById('hint').textContent = chapter.puzzle.hints[currentHint];
+  let puzzle;
+  
+  if (currentPuzzlePhase === 1) {
+    puzzle = chapter.puzzle;
+  } else {
+    puzzle = chapter.puzzle2;
+  }
+  
+  if (puzzle && puzzle.hints && currentHint < puzzle.hints.length) {
+    document.getElementById('hint').textContent = puzzle.hints[currentHint];
     currentHint++;
   } else {
     document.getElementById('hint').textContent = gameData.settings.noMoreHints;
   }
 };
-
-function nextChapter() {
-  currentChapter++;
-  if (currentChapter < gameData.chapters.length) {
-    renderChapter();
-    // 滾動到頁面頂部，讓玩家看到新章節
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  } else {
-    showEnding();
-  }
-}
 
 function showChapterConclusion(conclusion) {
   // 隱藏謎題區域
@@ -249,8 +298,6 @@ function showEnding() {
     behavior: 'smooth'
   });
 }
-
-
 
 // 更新進度條
 function updateProgress() {
@@ -354,17 +401,19 @@ async function analyzePhoto(canvas) {
     
     // 拍照即通過，不需要辨識特定物品
     statusDiv.textContent = '✅ 拍照成功！';
-    document.getElementById('puzzle-feedback').textContent = '照片已記錄，獲得道具！';
+    document.getElementById('puzzle-feedback').textContent = '照片已記錄！';
     
-    // 顯示章節結尾
     const chapter = gameData.chapters[currentChapter];
-    if (chapter.conclusion) {
+    
+    if (currentPuzzlePhase === 1) {
+      // 第一個謎題完成，進入第二階段
       setTimeout(() => {
-        showChapterConclusion(chapter.conclusion);
+        proceedToSecondPuzzle();
       }, 2000);
     } else {
+      // 第二個謎題完成，顯示結論
       setTimeout(() => {
-        nextChapter();
+        showChapterConclusion(chapter.conclusion);
       }, 2000);
     }
     
@@ -372,6 +421,20 @@ async function analyzePhoto(canvas) {
     console.error('處理照片時發生錯誤:', error);
     statusDiv.textContent = '❌ 處理失敗，請重新拍攝';
     document.getElementById('puzzle-feedback').textContent = '處理失敗，請重新拍攝';
+  }
+}
+
+function nextChapter() {
+  currentChapter++;
+  if (currentChapter < gameData.chapters.length) {
+    renderChapter();
+    // 滾動到頁面頂部，讓玩家看到新章節
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  } else {
+    showEnding();
   }
 }
 
