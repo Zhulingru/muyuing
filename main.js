@@ -132,6 +132,16 @@ function startChapter() {
       document.getElementById('puzzle-answer').value = '';
       document.getElementById('hint').textContent = '';
       currentHint = 0;
+      
+      // 根據謎題類型設置輸入框類型
+      const answerInput = document.getElementById('puzzle-answer');
+      if (chapter.puzzle.type === 'number') {
+        answerInput.type = 'number';
+        answerInput.placeholder = '請輸入數字';
+      } else {
+        answerInput.type = 'text';
+        answerInput.placeholder = '請輸入答案';
+      }
     }
     
     document.getElementById('puzzle-feedback').textContent = '';
@@ -336,75 +346,32 @@ document.getElementById('retake-photo').onclick = function() {
 // 分析照片
 async function analyzePhoto(canvas) {
   const statusDiv = document.getElementById('analysis-status');
-  statusDiv.textContent = '正在分析照片...';
+  statusDiv.textContent = '正在處理照片...';
   
   try {
-    // 使用 MobileNet 分析照片
-    const predictions = await mobileNetModel.classify(canvas);
-    console.log('辨識結果:', predictions);
+    // 模擬處理時間
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // 檢查是否找到目標物品
+    // 拍照即通過，不需要辨識特定物品
+    statusDiv.textContent = '✅ 拍照成功！';
+    document.getElementById('puzzle-feedback').textContent = '照片已記錄，獲得道具！';
+    
+    // 顯示章節結尾
     const chapter = gameData.chapters[currentChapter];
-    
-    // 擴展杯子相關的關鍵字（更全面）
-    const cupKeywords = [
-      'cup', 'mug', 'teacup', 'coffee', 'glass', 'tumbler', 'goblet',
-      'espresso', 'latte', 'cappuccino', 'beer', 'wine', 'water',
-      'drinking', 'beverage', 'container', 'vessel'
-    ];
-    
-    let found = false;
-    let foundItem = '';
-    let bestMatch = null;
-    
-    // 顯示前3個辨識結果（除錯用）
-    console.log('=== 辨識結果 ===');
-    predictions.slice(0, 3).forEach((pred, index) => {
-      console.log(`${index + 1}. ${pred.className} (${(pred.probability * 100).toFixed(1)}%)`);
-    });
-    
-    for (const prediction of predictions) {
-      const className = prediction.className.toLowerCase();
-      for (const keyword of cupKeywords) {
-        if (className.includes(keyword)) {
-          found = true;
-          foundItem = prediction.className;
-          bestMatch = prediction;
-          break;
-        }
-      }
-      if (found) break;
-    }
-    
-    if (found) {
-      statusDiv.textContent = '✅ 辨識成功！';
-      document.getElementById('puzzle-feedback').textContent = '你成功找到了杯子！';
-      
-      // 顯示章節結尾
-      const chapter = gameData.chapters[currentChapter];
-      if (chapter.conclusion) {
-        setTimeout(() => {
-          showChapterConclusion(chapter.conclusion);
-        }, 2000);
-      } else {
-        setTimeout(() => {
-          nextChapter();
-        }, 2000);
-      }
+    if (chapter.conclusion) {
+      setTimeout(() => {
+        showChapterConclusion(chapter.conclusion);
+      }, 2000);
     } else {
-      statusDiv.textContent = '❌ 未找到杯子';
-      document.getElementById('puzzle-feedback').innerHTML = `
-        <div>請重新拍攝杯子</div>
-        <div style="font-size: 0.9em; color: #d4af37; margin-top: 0.8rem;">
-          💡 拍攝建議：確保杯子清晰可見，光線充足
-        </div>
-      `;
+      setTimeout(() => {
+        nextChapter();
+      }, 2000);
     }
     
   } catch (error) {
-    console.error('分析照片時發生錯誤:', error);
-    statusDiv.textContent = '❌ 分析失敗，請重新拍攝';
-    document.getElementById('puzzle-feedback').textContent = '分析失敗，請重新拍攝';
+    console.error('處理照片時發生錯誤:', error);
+    statusDiv.textContent = '❌ 處理失敗，請重新拍攝';
+    document.getElementById('puzzle-feedback').textContent = '處理失敗，請重新拍攝';
   }
 }
 
