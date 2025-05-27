@@ -264,7 +264,7 @@ function updateProgress() {
   const currentChapterText = chapterNumbers[currentChapter] || (currentChapter + 1);
   const totalChapterText = chapterNumbers[totalChapters - 1] || totalChapters;
   
-  document.getElementById('progress-text').textContent = `第${currentChapterText}回 / 共${totalChapterText}回`;
+  document.getElementById('progress-text').textContent = `第${currentChapterText}章 / 共${totalChapterText}章`;
 }
 
 // ===== 相機功能 =====
