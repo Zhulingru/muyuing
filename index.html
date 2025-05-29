@@ -41,6 +41,7 @@
     <div id="chapter-title" class="chapter-title"></div>
     
     <!-- 進度條 -->
+    <!-- 進度條區塊：顯示目前章節進度與總章節數 -->
     <div class="progress-container">
       <div class="progress-bar">
         <div id="progress-fill" class="progress-fill"></div>
@@ -49,23 +50,27 @@
     </div>
     
     <!-- 章節開場示意圖 -->
+    <!-- 章節開場區塊：顯示章節代表圖片與開場文字，並有開始章節按鈕 -->
     <div id="chapter-intro-section" class="content-card" style="display:none;">
       <div id="chapter-intro-image" class="image-container"></div>
       <div id="chapter-intro-text" class="story-text"></div>
       <button id="start-chapter" class="btn">開始章節</button>
     </div>
     
+    <!-- 主要故事內容區塊：顯示章節故事與場景圖片 -->
     <div id="main-content" class="content-card" style="display:none;">
       <div id="story" class="story-text"></div>
       <div id="chapter-image" class="image-container"></div>
     </div>
     
+    <!-- 謎題互動區塊：根據謎題型態顯示不同互動介面（文字、數字、相機等） -->
     <div id="puzzle-section" class="content-card" style="display:none;">
       <h2 class="chapter-title">謎題</h2>
       <div id="puzzle-question" class="story-text"></div>
       <div id="puzzle-image" class="image-container" style="display:none;"></div>
       
       <!-- 文字輸入謎題 -->
+      <!-- 文字/數字輸入題區塊 -->
       <div id="text-puzzle" style="display:none;">
         <input type="text" id="puzzle-answer" class="puzzle-input" placeholder="請輸入答案">
         <button id="submit-answer" class="btn">確定</button>
@@ -74,6 +79,7 @@
       </div>
       
       <!-- 相機謎題 -->
+      <!-- 拍照互動題區塊，支援 AI 模型分析 -->
       <div id="camera-puzzle" style="display:none;">
         <button id="take-photo" class="btn" disabled>⏳ AI 模型載入中...</button>
         <div id="camera-preview" style="display:none;">
@@ -91,6 +97,7 @@
       <div id="puzzle-feedback" class="story-text"></div>
     </div>
     
+    <!-- 結局區塊：顯示章節或遊戲結局內容 -->
     <div id="ending-section" class="content-card" style="display:none;">
       <h2 id="ending-title" class="chapter-title"></h2>
       <div id="ending-story" class="story-text"></div>

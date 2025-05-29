@@ -5,6 +5,7 @@ let currentPuzzlePhase = 1; // 1=簡單謎題, 2=複雜謎題
 let mobileNetModel = null;
 let cameraStream = null;
 
+// ====== 遊戲主流程與資料載入 ======
 // 優先載入遊戲資料，讓玩家可以立即開始
 fetch('data/gameData.json')
   .then(response => response.json())
@@ -20,6 +21,7 @@ fetch('data/gameData.json')
     console.error('遊戲資料載入失敗:', error);
   });
 
+// ====== AI 模型載入與相機狀態 ======
 // 背景載入 AI 模型
 async function loadAIModel() {
   try {
@@ -49,6 +51,7 @@ function updateCameraButtonStatus() {
   }
 }
 
+// ====== 章節渲染與切換 ======
 // 開始章節按鈕事件
 document.getElementById('start-chapter').onclick = function() {
   startChapter();
@@ -168,6 +171,7 @@ function showCurrentPuzzle() {
   }
 }
 
+// ====== 謎題顯示與互動邏輯 ======
 // 提交答案
 document.getElementById('submit-answer').onclick = function() {
   const chapter = gameData.chapters[currentChapter];
@@ -299,6 +303,7 @@ function showEnding() {
   });
 }
 
+// ====== 進度條更新 ======
 // 更新進度條
 function updateProgress() {
   const totalChapters = gameData.chapters.length; // 動態取得章節數量
@@ -314,8 +319,7 @@ function updateProgress() {
   document.getElementById('progress-text').textContent = `第${currentChapterText}章 / 共${totalChapterText}章`;
 }
 
-// ===== 相機功能 =====
-
+// ====== 相機功能與拍照互動 ======
 // 重置相機介面
 function resetCameraInterface() {
   document.getElementById('camera-preview').style.display = 'none';

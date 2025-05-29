@@ -1,6 +1,6 @@
 /* 雷震子遇難記 - 古典廟宇風格介面 */
 
-/* CSS 變數定義 */
+/* ====== 主題色彩與全域變數 ====== */
 :root {
   --bg-primary: #0a0a0a;
   --bg-secondary: #1a1a1a;
@@ -11,7 +11,7 @@
   --shadow-dark: rgba(0, 0, 0, 0.8);
 }
 
-/* 基礎重置 */
+/* ====== 基礎重置與主體樣式 ====== */
 * {
   margin: 0;
   padding: 0;
@@ -95,8 +95,7 @@ body {
   font-weight: bold;
 }
 
-
-
+/* ====== 內容卡片與故事文本 ====== */
 /* 內容卡片 */
 .content-card {
   background: rgba(26, 26, 26, 0.9);
@@ -135,6 +134,7 @@ body {
   border-radius: 4px;
 }
 
+/* ====== 章節結尾樣式 ====== */
 /* 章節結尾 */
 .chapter-conclusion {
   margin-top: 2.5rem;
@@ -158,6 +158,7 @@ body {
   font-weight: bold;
 }
 
+/* ====== 圖片與互動元件樣式 ====== */
 /* 圖片容器 */
 .image-container {
   text-align: center;
@@ -206,6 +207,7 @@ body {
   display: block;
 }
 
+/* ====== 按鈕與輸入框樣式 ====== */
 /* 按鈕樣式 */
 .btn {
   background: linear-gradient(45deg, var(--border-gold), var(--text-gold));
@@ -244,6 +246,7 @@ body {
   box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
 }
 
+/* ====== 響應式設計（平板、手機、觸控） ====== */
 /* 響應式設計 - 手機優先 */
 
 /* 平板設計 */
@@ -399,6 +402,7 @@ body {
   }
 }
 
+/* ====== 相機功能專屬樣式 ====== */
 /* 相機功能樣式 */
 #camera-preview {
   text-align: center;
