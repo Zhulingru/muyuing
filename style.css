@@ -158,6 +158,28 @@ body {
   font-weight: bold;
 }
 
+/* ====== 謎題通過（新發現）樣式 ====== */
+.puzzle-discovery {
+  margin-top: 2.5rem;
+  padding: 1.5rem;
+  border-top: 2px solid #4caf50;
+  border-radius: 8px;
+  background: rgba(76, 175, 80, 0.08); /* 綠色系淡底色 */
+  position: relative;
+}
+.puzzle-discovery::before {
+  content: "✦ 新發現 ✦";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-secondary);
+  color: #4caf50;
+  padding: 0 1rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
 /* ====== 圖片與互動元件樣式 ====== */
 /* 圖片容器 */
 .image-container {
@@ -494,5 +516,152 @@ body {
   #retake-photo {
     width: 100%;
     margin: 10px 0;
+  }
+}
+
+/* 遊戲簡介區域 */
+#game-intro-section {
+  background: rgba(26, 26, 26, 0.9);
+  border: 2px solid var(--border-gold);
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 800px;
+  box-shadow: 0 4px 20px var(--shadow-dark);
+}
+
+#game-intro-section .chapter-title {
+  color: var(--text-gold);
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+#game-intro-section .story-text {
+  color: var(--text-light);
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+#game-intro-section .story-text p {
+  margin-bottom: 1rem;
+}
+
+#game-intro-section .btn {
+  display: block;
+  margin: 2rem auto 0;
+  padding: 1rem 3rem;
+  font-size: 1.2rem;
+}
+
+/* 謎題標題樣式 */
+#puzzle-section .chapter-title {
+  position: relative;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  text-align: center;
+  color: var(--text-gold);
+}
+
+#puzzle-section .chapter-title::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--border-gold) 20%, 
+    var(--text-gold) 50%, 
+    var(--border-gold) 80%, 
+    transparent 100%
+  );
+}
+
+#puzzle-section .chapter-title::after {
+  content: "✦";
+  position: absolute;
+  top: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-secondary);
+  padding: 0 1rem;
+  color: var(--text-gold);
+  font-size: 1.2rem;
+}
+
+/* 拖拉題樣式 */
+.drag-question {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(26, 26, 26, 0.9);
+  border: 2px solid var(--border-gold);
+  border-radius: 12px;
+}
+
+.drag-question h3 {
+  color: var(--text-gold);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.drag-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.drag-option {
+  background: rgba(212, 175, 55, 0.1);
+  border: 2px solid var(--border-gold);
+  border-radius: 8px;
+  padding: 0.8rem 1.5rem;
+  color: var(--text-light);
+  cursor: move;
+  user-select: none;
+  transition: all 0.3s ease;
+}
+
+.drag-option:hover {
+  background: rgba(212, 175, 55, 0.2);
+  transform: translateY(-2px);
+}
+
+.drag-option.dragging {
+  opacity: 0.5;
+  background: rgba(212, 175, 55, 0.3);
+}
+
+.drag-answer {
+  min-height: 60px;
+  background: rgba(245, 245, 220, 0.05);
+  border: 2px dashed var(--border-gold);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.drag-answer.drag-over {
+  background: rgba(212, 175, 55, 0.1);
+  border-style: solid;
+}
+
+.drag-answer .drag-option {
+  margin: 0.5rem;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .drag-options {
+    flex-direction: column;
+  }
+  
+  .drag-option {
+    width: 100%;
+    text-align: center;
   }
 }

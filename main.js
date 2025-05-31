@@ -12,7 +12,9 @@ fetch('data/gameData.json')
   .then(data => {
     gameData = data;
     console.log('遊戲資料載入完成');
-    renderChapter();
+    
+    // 顯示遊戲簡介
+    showGameIntroduction();
     
     // 在背景載入 AI 模型
     loadAIModel();
@@ -20,6 +22,45 @@ fetch('data/gameData.json')
   .catch(error => {
     console.error('遊戲資料載入失敗:', error);
   });
+
+// 顯示遊戲簡介
+function showGameIntroduction() {
+  // 隱藏其他區域
+  document.getElementById('chapter-intro-section').style.display = 'none';
+  document.getElementById('main-content').style.display = 'none';
+  document.getElementById('puzzle-section').style.display = 'none';
+  document.getElementById('ending-section').style.display = 'none';
+  
+  // 隱藏進度條
+  document.querySelector('.progress-container').style.display = 'none';
+  
+  // 創建並顯示簡介區域
+  const introSection = document.createElement('div');
+  introSection.id = 'game-intro-section';
+  introSection.className = 'content-card';
+  
+  // 添加簡介內容
+  introSection.innerHTML = `
+    <h2 class="chapter-title">${gameData.introduction.title}</h2>
+    <div class="story-text">
+      ${gameData.introduction.content.map(p => `<p>${p}</p>`).join('')}
+    </div>
+    <button id="start-game" class="btn">${gameData.introduction.startButton}</button>
+  `;
+  
+  // 添加到遊戲容器
+  document.getElementById('game-container').appendChild(introSection);
+  
+  // 添加開始遊戲按鈕事件
+  document.getElementById('start-game').onclick = function() {
+    // 移除簡介區域
+    document.getElementById('game-intro-section').remove();
+    // 顯示進度條
+    document.querySelector('.progress-container').style.display = '';
+    // 開始第一章
+    renderChapter();
+  };
+}
 
 // ====== AI 模型載入與相機狀態 ======
 // 背景載入 AI 模型
@@ -126,8 +167,10 @@ function showCurrentPuzzle() {
   
   if (currentPuzzlePhase === 1) {
     puzzle = chapter.puzzle; // 簡單謎題
+    document.getElementById('puzzle-question').previousElementSibling.textContent = '謎題';
   } else {
     puzzle = chapter.puzzle2; // 複雜謎題
+    document.getElementById('puzzle-question').previousElementSibling.textContent = '挑戰看看';
   }
   
   if (puzzle) {
@@ -143,12 +186,41 @@ function showCurrentPuzzle() {
     // 根據謎題類型顯示不同的介面
     if (puzzle.type === 'camera') {
       document.getElementById('text-puzzle').style.display = 'none';
+      document.getElementById('drag-puzzle').style.display = 'none';
       document.getElementById('camera-puzzle').style.display = '';
       resetCameraInterface();
-      // 更新相機按鈕狀態
       updateCameraButtonStatus();
+    } else if (puzzle.type === 'drag') {
+      document.getElementById('text-puzzle').style.display = 'none';
+      document.getElementById('camera-puzzle').style.display = 'none';
+      document.getElementById('drag-puzzle').style.display = '';
+      
+      // 生成拖拉題介面
+      const dragQuestionsDiv = document.getElementById('drag-questions');
+      dragQuestionsDiv.innerHTML = '';
+      
+      puzzle.dragPuzzles.forEach((dragPuzzle, index) => {
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'drag-question';
+        questionDiv.innerHTML = `
+          <h3>${index + 1}. ${dragPuzzle.prompt}</h3>
+          <div class="drag-options" id="options-${index}">
+            ${dragPuzzle.options.map(option => `
+              <div class="drag-option" draggable="true" data-option="${option}">
+                ${option}
+              </div>
+            `).join('')}
+          </div>
+          <div class="drag-answer" id="answer-${index}" data-answer="${dragPuzzle.answer[0]}"></div>
+        `;
+        dragQuestionsDiv.appendChild(questionDiv);
+      });
+      
+      // 設置拖拉事件
+      setupDragAndDrop();
     } else {
       document.getElementById('text-puzzle').style.display = '';
+      document.getElementById('drag-puzzle').style.display = 'none';
       document.getElementById('camera-puzzle').style.display = 'none';
       document.getElementById('puzzle-answer').value = '';
       document.getElementById('hint').textContent = '';
@@ -171,6 +243,92 @@ function showCurrentPuzzle() {
   }
 }
 
+// 設置拖拉功能
+function setupDragAndDrop() {
+  const dragOptions = document.querySelectorAll('.drag-option');
+  const dropZones = document.querySelectorAll('.drag-answer');
+  
+  dragOptions.forEach(option => {
+    option.addEventListener('dragstart', handleDragStart);
+    option.addEventListener('dragend', handleDragEnd);
+  });
+  
+  dropZones.forEach(zone => {
+    zone.addEventListener('dragover', handleDragOver);
+    zone.addEventListener('dragleave', handleDragLeave);
+    zone.addEventListener('drop', handleDrop);
+  });
+  
+  // 提交拖拉題答案
+  document.getElementById('submit-drag').onclick = function() {
+    const chapter = gameData.chapters[currentChapter];
+    const puzzle = chapter.puzzle2;
+    let allCorrect = true;
+    
+    puzzle.dragPuzzles.forEach((dragPuzzle, index) => {
+      const answerZone = document.getElementById(`answer-${index}`);
+      const selectedOption = answerZone.querySelector('.drag-option');
+      
+      if (!selectedOption || selectedOption.dataset.option !== dragPuzzle.answer[0]) {
+        allCorrect = false;
+      }
+    });
+    
+    if (allCorrect) {
+      document.getElementById('drag-feedback').textContent = gameData.settings.correctMessage;
+      if (currentPuzzlePhase === 1) {
+        showPuzzleDiscovery();
+        setTimeout(() => {
+          proceedToSecondPuzzle();
+        }, 1800);
+      } else {
+        setTimeout(() => {
+          showChapterConclusion(chapter.conclusion);
+        }, 1000);
+      }
+    } else {
+      document.getElementById('drag-feedback').textContent = gameData.settings.wrongMessage;
+    }
+  };
+}
+
+// 拖拉事件處理函數
+function handleDragStart(e) {
+  e.target.classList.add('dragging');
+  e.dataTransfer.setData('text/plain', e.target.dataset.option);
+}
+
+function handleDragEnd(e) {
+  e.target.classList.remove('dragging');
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  const dropZone = e.currentTarget;
+  dropZone.classList.remove('drag-over');
+  
+  // 清空答案區域
+  dropZone.innerHTML = '';
+  
+  // 創建新的選項元素
+  const option = document.createElement('div');
+  option.className = 'drag-option';
+  option.textContent = e.dataTransfer.getData('text/plain');
+  option.dataset.option = e.dataTransfer.getData('text/plain');
+  
+  // 將選項添加到答案區域
+  dropZone.appendChild(option);
+}
+
 // ====== 謎題顯示與互動邏輯 ======
 // 提交答案
 document.getElementById('submit-answer').onclick = function() {
@@ -190,10 +348,12 @@ document.getElementById('submit-answer').onclick = function() {
     document.getElementById('puzzle-feedback').textContent = gameData.settings.correctMessage;
     
     if (currentPuzzlePhase === 1) {
+      // 新增：顯示「新發現」區塊
+      showPuzzleDiscovery();
       // 第一個謎題完成，進入第二階段
       setTimeout(() => {
         proceedToSecondPuzzle();
-      }, 1000);
+      }, 1800);
     } else {
       // 第二個謎題完成，顯示結論
       setTimeout(() => {
@@ -440,5 +600,17 @@ function nextChapter() {
   } else {
     showEnding();
   }
+}
+
+// ====== 新發現區塊顯示 ======
+function showPuzzleDiscovery() {
+  const discoveryDiv = document.createElement('div');
+  discoveryDiv.className = 'puzzle-discovery';
+  discoveryDiv.innerHTML = '<p>你正確解開謎題，獲得了新的線索，劇情將繼續推進！</p>';
+  document.getElementById('story').appendChild(discoveryDiv);
+  // 滾動到新內容
+  setTimeout(() => {
+    discoveryDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 300);
 }
 

@@ -46,7 +46,7 @@
       <div class="progress-bar">
         <div id="progress-fill" class="progress-fill"></div>
       </div>
-      <div id="progress-text" class="progress-text">第一章 / 共六章</div>
+      <div id="progress-text" class="progress-text">第一章 / 共八章</div>
     </div>
     
     <!-- 章節開場示意圖 -->
@@ -59,43 +59,47 @@
     
     <!-- 主要故事內容區塊：顯示章節故事與場景圖片 -->
     <div id="main-content" class="content-card" style="display:none;">
-      <div id="story" class="story-text"></div>
       <div id="chapter-image" class="image-container"></div>
+      <div id="story" class="story-text"></div>
+      <div id="puzzle-section" style="display: none;">
+        <h2 class="chapter-title">謎題</h2>
+        <div id="puzzle-question"></div>
+        <div id="puzzle-image"></div>
+        
+        <!-- 文字謎題區域 -->
+        <div id="text-puzzle">
+          <input type="text" id="puzzle-answer" class="puzzle-input" placeholder="請輸入答案">
+          <div id="hint"></div>
+          <button id="show-hint" class="btn">顯示提示</button>
+          <button id="submit-answer" class="btn">提交答案</button>
+          <div id="puzzle-feedback"></div>
+        </div>
+        
+        <!-- 拖拉題區域 -->
+        <div id="drag-puzzle" style="display: none;">
+          <div id="drag-questions"></div>
+          <div id="drag-feedback"></div>
+          <button id="submit-drag" class="btn">提交答案</button>
+        </div>
+        
+        <!-- 相機謎題區域 -->
+        <div id="camera-puzzle" style="display: none;">
+          <button id="take-photo" class="btn">📸 開始拍照</button>
+          <div id="camera-preview" style="display: none;">
+            <video id="camera-video" autoplay playsinline></video>
+            <button id="capture-photo" class="btn">拍攝</button>
+            <button id="close-camera" class="btn">取消</button>
+          </div>
+          <div id="photo-result" style="display: none;">
+            <canvas id="photo-canvas"></canvas>
+            <div id="analysis-status"></div>
+            <button id="retake-photo" class="btn">重新拍攝</button>
+          </div>
+        </div>
+      </div>
     </div>
     
     <!-- 謎題互動區塊：根據謎題型態顯示不同互動介面（文字、數字、相機等） -->
-    <div id="puzzle-section" class="content-card" style="display:none;">
-      <h2 class="chapter-title">謎題</h2>
-      <div id="puzzle-question" class="story-text"></div>
-      <div id="puzzle-image" class="image-container" style="display:none;"></div>
-      
-      <!-- 文字輸入謎題 -->
-      <!-- 文字/數字輸入題區塊 -->
-      <div id="text-puzzle" style="display:none;">
-        <input type="text" id="puzzle-answer" class="puzzle-input" placeholder="請輸入答案">
-        <button id="submit-answer" class="btn">確定</button>
-        <button id="show-hint" class="btn">提示</button>
-        <div id="hint" class="story-text"></div>
-      </div>
-      
-      <!-- 相機謎題 -->
-      <!-- 拍照互動題區塊，支援 AI 模型分析 -->
-      <div id="camera-puzzle" style="display:none;">
-        <button id="take-photo" class="btn" disabled>⏳ AI 模型載入中...</button>
-        <div id="camera-preview" style="display:none;">
-          <video id="camera-video" autoplay playsinline style="width:100%; max-width:400px; border-radius:8px;"></video>
-          <button id="capture-photo" class="btn">拍攝</button>
-          <button id="close-camera" class="btn">取消</button>
-        </div>
-        <div id="photo-result" style="display:none;">
-          <canvas id="photo-canvas" style="width:100%; max-width:400px; border-radius:8px;"></canvas>
-          <div id="analysis-status" class="story-text">正在分析照片...</div>
-          <button id="retake-photo" class="btn">重新拍攝</button>
-        </div>
-      </div>
-      
-      <div id="puzzle-feedback" class="story-text"></div>
-    </div>
     
     <!-- 結局區塊：顯示章節或遊戲結局內容 -->
     <div id="ending-section" class="content-card" style="display:none;">
